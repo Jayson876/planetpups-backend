@@ -24,12 +24,6 @@ mongoose
 const app = express();
 
 app.use(cors());
-
-app.use(function (req, res, next) {
-  res.header("Allow-Methods", "GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS");
-
-  next();
-});
 // app.use(express.json({ strict: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
