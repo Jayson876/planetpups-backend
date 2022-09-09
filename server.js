@@ -37,7 +37,7 @@ app.use(function (req, res, next) {
 // app.use(express.json({ strict: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use('/public',express.static(path.join(__dirname, "public")));
+app.use('/tmp',express.static(path.join(__dirname, "tmp")));
 // app.use(
 //   cors({
 //     origin: 'http://localhost:4200',
