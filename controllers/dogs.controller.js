@@ -5,7 +5,7 @@ var fs = require("fs");
 const multer = require("multer");
 
 upload = multer({
-  dest: "../uploads/dog-photos",
+  dest: "../public/tmp",
 });
 
 exports.createDog = async (req, res) => {
