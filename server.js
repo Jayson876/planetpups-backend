@@ -32,7 +32,7 @@ app.use(
 // app.use(express.json({ strict: true }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/app", express.static(path.join(__dirname, "app")));
+app.use("/tmp", express.static(path.join(__dirname, "tmp")));
 
 app.use(cookieParser());
 app.use(

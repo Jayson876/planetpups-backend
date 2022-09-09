@@ -1,12 +1,11 @@
 const { JSONResponse } = require("../lib/helper");
 const { User, Dog } = require("../models/models");
-const path = require("path");
 var fs = require("fs");
 
 const multer = require("multer");
 
 upload = multer({
-  dest: path.join(__dirname, '/app/tmp'),
+  dest: "../tmp",
 });
 
 exports.createDog = async (req, res) => {
