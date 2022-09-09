@@ -18,7 +18,7 @@ mongoose
     console.log(`Connected Successfully. Database: "${x.connections[0].name}"`);
   })
   .catch((err) => {
-    console.error("Error connecting to mongodb", err.reason);
+    console.error("Error connecting to mongodb", err);
   });
 
 const app = express();
