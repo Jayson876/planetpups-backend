@@ -29,6 +29,6 @@ router.put("/:id", controller.updateDog);
 router.delete("/:id", controller.deleteDogById);
 
 // Filter
-router.get("/filter", dogFilter.byBreed);
+router.get("/all/:search", dogFilter.byBreed);
 
 module.exports = router;

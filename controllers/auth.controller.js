@@ -17,20 +17,12 @@ exports.register = async (req, res) => {
       surname: req.body.surname,
       email: req.body.email,
       password: req.body.password,
-      role: "user",
+      role: "User",
       cell: req.body.cell,
       whatsapp: hasWhatsapp,
     };
     User.find({ email: newUser.email }, (err, user) => {
       if (err) {
-        JSONResponse.error(
-          res,
-          "Failure handling user model. Cannot create ",
-          500
-        );
-        return;
-      }
-      if (!user) {
         JSONResponse.error(
           res,
           "Failure handling user model. Cannot create ",
@@ -86,6 +78,7 @@ exports.login = (req, res) => {
         token: token,
         id: user._id,
         tokenExpires: new Date(Date.now() + tokenExpiration * 1000),
+        role: user.role,
       });
     });
 };

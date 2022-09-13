@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ["user", "admin"],
+      enum: ["User", "Admin"],
       // required: true,
     },
     dogs: [
@@ -68,7 +68,11 @@ const Dog = mongoose.model(
       price: Number,
       breed_1: String,
       breed_2: String,
-      gender: String,
+      gender: {
+        type: String,
+        enum: ["Male", "Female"],
+        // required: true,
+      },
       uploadDate: String,
       owner: {
         type: mongoose.Schema.Types.ObjectId,

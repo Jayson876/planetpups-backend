@@ -11,6 +11,7 @@ verifyToken = (req, res, next) => {
     if (err) {
       return res.status(401).send({ message: "Unauthorized!" });
     }
+
     req.userId = decoded.id;
     next();
   });
@@ -22,7 +23,7 @@ isAdmin = (req, res, next) => {
       res.status(500).send({ message: err });
       return;
     }
-    if (user.role === "admin") {
+    if (user.role === "Admin") {
       next();
       return;
     }

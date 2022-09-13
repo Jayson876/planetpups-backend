@@ -3,6 +3,7 @@ const controller = require("../controllers/users.controller");
 const { User } = require("../models/models");
 const authJwt = require("../auth/middlewares/authJwt");
 const upload = require("../auth/middlewares/upload");
+const verifyRegistration = require("../auth/middlewares/verifyRegister");
 
 let router = express.Router();
 
@@ -21,7 +22,7 @@ router.get("/:id", controller.getUserById);
 // Create user
 router.post(
   "/",
-  [authJwt.isAdmin],
+  [verifyRegistration.checkDuplicateUsernameOrEmail],
   controller.createUser
 );
 // router.post(

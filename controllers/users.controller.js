@@ -7,7 +7,7 @@ exports.getAllUsers = async (req, res) => {
     users.forEach((user) => {
       user.password = undefined;
     });
-    JSONResponse.success(res, "Success.", users, 200);
+    res.json(users);
   } catch (error) {
     JSONResponse.error(res, "Failure getting user model.", error, 500);
   }
@@ -21,6 +21,7 @@ exports.getUserById = async (req, res) => {
     JSONResponse.error(res, "Failure getting user model.", error, 500);
   }
 };
+
 exports.createUser = async (req, res) => {
   try {
     hasWhatsapp = false;
@@ -30,15 +31,15 @@ exports.createUser = async (req, res) => {
       hasWhatsapp = req.body.whatsapp;
     }
     let newUser = {
-      firstName: req.body.firstName.trim(),
-      surname: req.body.surname.trim(),
-      email: req.body.email.trim(),
+      firstName: req.body.firstName,
+      surname: req.body.surname,
+      email: req.body.email,
       password: req.body.password,
-      role: req.body.role.trim(),
-      cell: req.body.cell.trim(),
+      role: req.body.role,
+      cell: req.body.cell,
       whatsapp: hasWhatsapp,
     };
-    await User.findOne({ email: newUser.email }, (err, user) => {
+    User.find({ email: newUser.email }, (err, user) => {
       if (err) {
         JSONResponse.error(
           res,
@@ -47,14 +48,9 @@ exports.createUser = async (req, res) => {
         );
         return;
       }
-      if (user) {
-        JSONResponse.error(res, "Email address is already taken", 500);
-        return;
-      } else {
-        const newUserChecked = User.create(newUser);
-        newUserChecked.password = undefined;
-        JSONResponse.success(res, "Success.", newUserChecked, 200);
-      }
+      User.create(newUser);
+      newUser.password = undefined;
+      res.json(newUser);
     });
   } catch (error) {
     JSONResponse.error(
@@ -63,8 +59,10 @@ exports.createUser = async (req, res) => {
       error,
       500
     );
+    return;
   }
 };
+
 exports.updateUser = async (req, res) => {
   try {
     User.findByIdAndUpdate(req.params.id, req.body)

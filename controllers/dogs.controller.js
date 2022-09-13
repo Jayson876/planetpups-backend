@@ -3,10 +3,31 @@ const { User, Dog } = require("../models/models");
 var fs = require("fs");
 
 const multer = require("multer");
+const { ifError } = require("assert");
 
 upload = multer({
-  dest: "../tmp/images",
+  dest: "tmp/images",
 });
+
+function breedTest(breed) {
+  if (breed === "Pure") {
+    return "";
+  }
+  if (breed === "Mixed") {
+    return /.*\S.*/;
+  }
+  return /(.*?)/;
+}
+
+function genderTest(gender) {
+  if (gender === "Male") {
+    return "Male";
+  }
+  if (gender === "Female") {
+    return "Female";
+  }
+  return /(.*?)/;
+}
 
 exports.createDog = async (req, res) => {
   try {
@@ -46,14 +67,44 @@ exports.createDog = async (req, res) => {
     JSONResponse.error(res, "An error has occurred.", error, 500);
   }
 };
+
 exports.getAllDogs = async (req, res) => {
   try {
-    const dogs = await Dog.find().populate("owner");
-    res.json(dogs);
+    const checkQuery = Object.values(req.query);
+    if (checkQuery.length > 0) {
+      const dogs = await Dog.aggregate([
+        { $match: { gender: genderTest(req.query.gender) } },
+        { $match: { breed_2: breedTest(req.query.breed ?? "") } },
+        {
+          $lookup: {
+            from: "users",
+            localField: "owner",
+            foreignField: "_id",
+            as: "owner",
+          },
+        },
+        { $unwind: "$owner" },
+      ]);
+      if (+req.query.price === 1) {
+        dogs.sort((a, b) => {
+          return a.price > b.price ? -1 : 0;
+        });
+        // res.json(sortedDogs);
+      } else if (+req.query.price === -1) {
+        dogs.sort((a, b) => {
+          return a.price > b.price ? 0 : -1;
+        });
+      }
+      res.json(dogs);
+    } else {
+      const dogs = await Dog.find({}).populate("owner");
+      res.json(dogs);
+    }
   } catch (error) {
     JSONResponse.error(res, "Failure getting dog model.", error, 500);
   }
 };
+
 exports.getDogById = async (req, res) => {
   try {
     const dog = await Dog.findById({ _id: req.params.id }).populate("owner");
@@ -63,18 +114,21 @@ exports.getDogById = async (req, res) => {
     JSONResponse.error(res, "Failure getting dog model.", error, 500);
   }
 };
+
 exports.updateDog = async (req, res) => {
   try {
     Dog.findByIdAndUpdate(req.params.id, req.body)
       .then((result) => {
-        if (result) JSONResponse.success(res, "Success.", result, 200);
-        else
+        if (result) {
+          res.json(result);
+        } else {
           JSONResponse.error(
             res,
-            "Failure updating dog.",
+            "Failure updating user.",
             new Error("Document not successfully updated."),
             409
           );
+        }
       })
       .catch((error) => {
         JSONResponse.error(
@@ -85,9 +139,11 @@ exports.updateDog = async (req, res) => {
         );
       });
   } catch (error) {
-    JSONResponse.error(res, "Failure handling dog model.", error, 500);
+    JSONResponse.error(res, "Failure handling user model.", error, 500);
   }
 };
+
+
 exports.deleteDogById = async (req, res) => {
   try {
     const dog = await Dog.findById(req.params.id);
@@ -120,8 +176,8 @@ exports.getAllUserDogs = async (req, res) => {
 exports.createUserDog = async (req, res) => {
   try {
     const dogData = req.body;
-    console.log(dogData);
-    await User.findById({ _id: req.params.id }).then((user) => {
+    // console.log(dogData);
+    await User.findById({ _id: req.params.id }).then(async (user) => {
       if (!user.email) {
         JSONResponse.error(res, "This user does not exist.", 401);
         return done(null, false);
