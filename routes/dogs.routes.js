@@ -23,7 +23,7 @@ router.get("/:id", controller.getDogById);
 // router.post("/", upload.single('dogImage'), controller.createDog);
 
 // Update dog
-router.put("/:id", controller.updateDog);
+router.put("/:id", upload.single('dogImage'), controller.updateDog);
 
 // Delete dog
 router.delete("/:id", controller.deleteDogById);

@@ -117,7 +117,25 @@ exports.getDogById = async (req, res) => {
 
 exports.updateDog = async (req, res) => {
   try {
-    Dog.findByIdAndUpdate(req.params.id, req.body)
+    let userInput = {
+      age: req.body.age,
+      shots: req.body.shots,
+      gender: req.body.gender,
+      price: req.body.price,
+      breed_1: req.body.breed_1,
+      breed_2: req.body.breed_2,
+    };
+    if (req.file) {
+      let thisDog = await Dog.findById({ _id: req.params.id });
+      var fileName = thisDog.dogImagePath;
+      var filePath = `${fileName}`;
+      fs.rmSync(filePath, {
+        force: true,
+      });
+      userInput.dogImage = req.file.filename;
+      userInput.dogImagePath = req.file.path;
+    }
+    Dog.findByIdAndUpdate(req.params.id, userInput)
       .then((result) => {
         if (result) {
           res.json(result);
@@ -142,7 +160,33 @@ exports.updateDog = async (req, res) => {
     JSONResponse.error(res, "Failure handling user model.", error, 500);
   }
 };
-
+// exports.updateDog = async (req, res) => {
+//   try {
+//     Dog.findByIdAndUpdate(req.params.id, req.body)
+//       .then((result) => {
+//         if (result) {
+//           res.json(result);
+//         } else {
+//           JSONResponse.error(
+//             res,
+//             "Failure updating user.",
+//             new Error("Document not successfully updated."),
+//             409
+//           );
+//         }
+//       })
+//       .catch((error) => {
+//         JSONResponse.error(
+//           res,
+//           "Fatal error accessing database.",
+//           error.message,
+//           500
+//         );
+//       });
+//   } catch (error) {
+//     JSONResponse.error(res, "Failure handling user model.", error, 500);
+//   }
+// };
 
 exports.deleteDogById = async (req, res) => {
   try {
